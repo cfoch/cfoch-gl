@@ -21,67 +21,74 @@ init(void)
   glGenVertexArrays(NumVAOs, VAOs);
   glBindVertexArray(VAOs[TrianglesUp]);
 
-  GLfloat verticesUp[NumVerticesUp][2] = {
-    {  0.00,  0.00 },
-    {  0.50,  0.00 },
-    {  0.50,  0.25 },
-    {  0.25,  0.50 },
-    {  0.00,  0.75 },
-    { -0.25,  0.50 },
-    { -0.50,  0.25 },
-    { -0.50,  0.00 }
+  GLfloat verticesUp[NumVerticesUp][3] = {
+    {  0.00,  0.00, 0.0 },
+    {  0.50,  0.00, 0.0 },
+    {  0.50,  0.25, 0.0 },
+    {  0.25,  0.50, 0.0 },
+    {  0.00,  0.75, 0.0 },
+    { -0.25,  0.50, 0.0 },
+    { -0.50,  0.25, 0.0 },
+    { -0.50,  0.00, 0.0 }
   };
 
   glGenBuffers(NumBuffers, Buffers);
   glBindBuffer(GL_ARRAY_BUFFER, Buffers[ArrayUpBuffer]);
   glBufferData(GL_ARRAY_BUFFER, sizeof(verticesUp), verticesUp, GL_STATIC_DRAW);
 
-  ShaderInfo shadersUp[] = {
-    {GL_VERTEX_SHADER, "triangles.vert"},
-    {GL_FRAGMENT_SHADER, "trianglesUp.frag"},
-    {GL_NONE, NULL}
-  };
 
-  GLuint program = LoadShaders(shadersUp);
-  glUseProgram(program);
-
-  glVertexAttribPointer(vPosition, 2, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0));
+  glVertexAttribPointer(vPosition, 3, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0));
   glEnableVertexAttribArray(vPosition);
 
   glBindVertexArray(VAOs[TrianglesDown]);
 
-  GLfloat verticesDown[NumVerticesDown][2] = {
-    {  0.00,  0.00 },
-    { -0.50,  0.00 },
-    {  0.00, -0.50 }
+  GLfloat verticesDown[NumVerticesDown][3] = {
+    {  0.00,  0.00, 0.0 },
+    { -0.50,  0.00, 0.0 },
+    {  0.00, -0.50, 0.0 }
   };
 
   glBindBuffer(GL_ARRAY_BUFFER, Buffers[ArrayDownBuffer]);
   glBufferData(GL_ARRAY_BUFFER, sizeof(verticesDown), verticesDown,
       GL_STATIC_DRAW);
 
-  ShaderInfo shadersDown[] = {
-    {GL_VERTEX_SHADER, "triangles.vert"},
-    {GL_FRAGMENT_SHADER, "trianglesDown.frag"},
-    {GL_NONE, NULL}
-  };
-
-  program = LoadShaders(shadersDown);
-  glUseProgram(program);
-
-  glVertexAttribPointer(vPosition, 2, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0));
+  glVertexAttribPointer(vPosition, 3, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0));
   glEnableVertexAttribArray(vPosition);
 }
 
 void
 display(void)
 {
+  GLuint program;
+
   glClearColor(0.37, 0.59, 0.30, 1.0);
   glClear(GL_COLOR_BUFFER_BIT);
+
+
+  // UP
   glBindVertexArray(VAOs[TrianglesUp]);
+  ShaderInfo shadersUp[] = {
+    {GL_VERTEX_SHADER, "triangles.vert"},
+    {GL_FRAGMENT_SHADER, "trianglesUp.frag"},
+    {GL_NONE, NULL}
+  };
+  program = LoadShaders(shadersUp);
+  glUseProgram(program);
+
   glDrawArrays(GL_TRIANGLE_FAN, 0, NumVerticesUp);
+
+  // DOWN
   glBindVertexArray(VAOs[TrianglesDown]);
+  ShaderInfo shadersDown[] = {
+    {GL_VERTEX_SHADER, "triangles.vert"},
+    {GL_FRAGMENT_SHADER, "trianglesDown.frag"},
+    {GL_NONE, NULL}
+  };
+  program = LoadShaders(shadersDown);
+  glUseProgram(program);
+
   glDrawArrays(GL_TRIANGLES, 0, NumVerticesDown);
+
   glFlush();
 }
 

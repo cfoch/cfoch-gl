@@ -1,3 +1,4 @@
+#include <cstring>
 #include "LoadShaders.h"
 
 using namespace std;
@@ -14,7 +15,7 @@ read_shader(const char * filename)
   stringstream buffer;
   buffer << f.rdbuf();
   shader = buffer.str();
-  return shader.c_str();
+  return strdup(shader.c_str());
 }
 
 GLuint
