@@ -16,9 +16,10 @@ GLuint vao[1];
 GLuint ebo[1];
 GLuint vbo[1];
 
-GLint render_model_matrix_loc;
-GLint render_projection_matrix_loc;
+// GLint render_model_matrix_loc;
+// GLint render_projection_matrix_loc;
 GLint render_view_matrix;
+GLint render_rotation_matrix;
 
 void
 init(void)
@@ -37,6 +38,7 @@ init(void)
   // render_model_matrix_loc = glGetUniformLocation(render_prog, "model_matrix");
   // render_projection_matrix_loc = glGetUniformLocation(render_prog, "projection_matrix");
   render_view_matrix = glGetUniformLocation(program, "view_matrix");
+  render_rotation_matrix = glGetUniformLocation(program, "rotation_matrix");
 
   static GLfloat cube_positions[] = {
     -0.3f, -0.3f, -0.3f, 1.0f,
@@ -106,8 +108,11 @@ display(void)
   // glUniformMatrix4fv(render_model_matrix_loc, 4, GL_FALSE, model_matrix);
   // glUniformMatrix4fv(render_projection_matrix_loc, 1, GL_FALSE, projection_matrix);
 
-  glm::mat4 view_matrix = glm::translate(glm::vec3(0.3f, 0.0f, 0.0f));
+  glm::mat4 view_matrix = glm::translate(glm::vec3(0.4f, 0.0f, 0.0f));
   glUniformMatrix4fv(render_view_matrix, 1, GL_FALSE, &view_matrix[0][0]);
+
+  glm::mat4 rotation_matrix = glm::rotate(57.0f, glm::vec3(1.0f, 1.0f, 0.0f));
+  glUniformMatrix4fv(render_rotation_matrix, 1, GL_FALSE, &rotation_matrix[0][0]);
 
   glBindVertexArray(vao[0]);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo[0]);
