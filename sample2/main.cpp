@@ -1,8 +1,13 @@
 #include <iostream>
+
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/transform.hpp>
+
 #include "LoadShaders.h"
 
 #define BUFFER_OFFSET(x) ((const void*) (x))
-#define USE_PRIMITIVE_RESTART 1
+#define USE_PRIMITIVE_RESTART 0
 
 using namespace std;
 
@@ -10,6 +15,10 @@ GLuint program;
 GLuint vao[1];
 GLuint ebo[1];
 GLuint vbo[1];
+
+GLint render_model_matrix_loc;
+GLint render_projection_matrix_loc;
+GLint render_view_matrix;
 
 void
 init(void)
@@ -25,15 +34,19 @@ init(void)
   program = LoadShaders(shader_info, names);
   glUseProgram(program);
 
+  // render_model_matrix_loc = glGetUniformLocation(render_prog, "model_matrix");
+  // render_projection_matrix_loc = glGetUniformLocation(render_prog, "projection_matrix");
+  render_view_matrix = glGetUniformLocation(program, "view_matrix");
+
   static GLfloat cube_positions[] = {
-    -1.0f, -1.0f, -1.0f, 1.0f,
-    -1.0f, -1.0f,  1.0f, 1.0f,
-    -1.0f,  1.0f, -1.0f, 1.0f,
-    -1.0f,  1.0f,  1.0f, 1.0f,
-     1.0f, -1.0f, -1.0f, 1.0f,
-     1.0f, -1.0f,  1.0f, 1.0f,
-     1.0f,  1.0f, -1.0f, 1.0f,
-     1.0f,  1.0f,  1.0f, 1.0f
+    -0.3f, -0.3f, -0.3f, 1.0f,
+    -0.3f, -0.3f,  0.3f, 1.0f,
+    -0.3f,  0.3f, -0.3f, 1.0f,
+    -0.3f,  0.3f,  0.3f, 1.0f,
+     0.3f, -0.3f, -0.3f, 1.0f,
+     0.3f, -0.3f,  0.3f, 1.0f,
+     0.3f,  0.3f, -0.3f, 1.0f,
+     0.3f,  0.3f,  0.3f, 1.0f
   };
 
   static const GLfloat cube_colors[] = {
@@ -86,6 +99,16 @@ display(void)
 
   glUseProgram(program);
 
+  // Set up the model and projection matrix
+  // mat4 model_matrix(translate(0.0f, 0.0f, -5.0f) * rotate(t * 360.0f, Y) * rotate(t * 720.0f, Z));
+  // vmath::mat4 projection_matrix(vmath::frustum(-1.0f, 1.0f, -aspect, aspect, 1.0f, 500.0f));
+
+  // glUniformMatrix4fv(render_model_matrix_loc, 4, GL_FALSE, model_matrix);
+  // glUniformMatrix4fv(render_projection_matrix_loc, 1, GL_FALSE, projection_matrix);
+
+  glm::mat4 view_matrix = glm::translate(glm::vec3(0.3f, 0.0f, 0.0f));
+  glUniformMatrix4fv(render_view_matrix, 1, GL_FALSE, &view_matrix[0][0]);
+
   glBindVertexArray(vao[0]);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo[0]);
 
@@ -93,7 +116,6 @@ display(void)
   printf("Primitive restart\n");
   glEnable(GL_PRIMITIVE_RESTART);
   glPrimitiveRestartIndex(0xFFFF);
-  printf("hello1\n");
   glDrawElements(GL_TRIANGLE_STRIP, 17, GL_UNSIGNED_SHORT, NULL);
   #else
   printf("NO Primitive restart\n");
